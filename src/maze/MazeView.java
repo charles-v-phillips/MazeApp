@@ -10,7 +10,7 @@ public class MazeView extends FlowPane {
     static final int H = 400;
     static final int W = 400;
     static final int SIDEBAR_HEIGHT = H;
-    static final int SIDEBAR_WIDTH = 120;
+    static final int SIDEBAR_WIDTH = 200;
     static final int NUM_COLUMNS = W/TILE_SIZE;
     static final int NUM_ROWS = H/TILE_SIZE;
 

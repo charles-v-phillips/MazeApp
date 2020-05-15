@@ -33,16 +33,10 @@ public class MazeController implements MazeViewDelegate {
     public void handleEvent(Event e){
         Object o = e.getSource();
         if(o instanceof Button) {
-            System.out.println("BUTTON CLICKED");
             Button b = (Button) o;
-            if(b.getId().equals("setStartButton")){
-                for(Node n :view.mazePane.getChildren() ){
-                    Tile t = (Tile) n;
-                    t.changeColor(Color.RED);
+            if(b.getId().equals("setStartButton"))setStartButtonAction();
+            else if(b.getId().equals("setEndButton"))setEndButtonAction();
                 }
-            }
-            }
-
 
         if(o instanceof Tile) {
             System.out.println( "YOU HIT A TILE");
@@ -57,19 +51,40 @@ public class MazeController implements MazeViewDelegate {
             model.print();
         }
 
-    }
-/*
-    private void markAsWall(MouseEvent e, double x, double y){
-
-        double rowCoor =  e.getSceneY() - y;
-        double colCoor =  e.getSceneX() - x;
-        int row = (int) rowCoor/TILE_SIZE;
-        int col = (int) colCoor/TILE_SIZE;
-        //maze.grid()[row][col].setIsWall(true);
-        //maze.print();
-
+        refreshMazePane();
 
     }
-    */
+    private void setEndButtonAction(){
+        String s = view.sideBar.setEndTextField.getText();
+        String[] points = s.split(",");
+        int r = Integer.parseInt(points[0]);
+        int c = Integer.parseInt(points[1]);
+        model.rowEnd = r;
+        model.colEnd = c;
+    }
+
+    private void setStartButtonAction(){
+        String s = view.sideBar.setStartTextField.getText();
+        String[] points = s.split(",");
+        int r = Integer.parseInt(points[0]);
+        int c = Integer.parseInt(points[1]);
+        model.rowStart = r;
+        model.colStart = c;
+
+    }
+    private void refreshMazePane(){
+        for(Node n : view.mazePane.getChildren()){
+            Tile t = (Tile)n;
+            int row = t.row();
+            int col = t.col();
+            if(model.grid()[row][col] == 0){t.changeColor(Color.WHITE);}
+            if(model.grid()[row][col] == 1){t.changeColor(Color.BLACK);}
+            if(row == model.rowStart && col == model.colStart){ t.changeColor(Color.BLUE);}
+            if(row == model.rowEnd && col == model.colEnd){t.changeColor(Color.GREEN);}
+
+        }
+
+    }
+
 
 }
