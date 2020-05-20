@@ -3,6 +3,7 @@ package maze;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -14,6 +15,10 @@ public class MazeApplicationSideBar extends VBox {
     public TextField setStartTextField;
     public Button setEndButton;
     public TextField setEndTextField;
+    public Button DFS;
+    public Button AStar;
+    public Button BFS;
+    public Button refresh;
     public MazeViewDelegate delegate;
     MazeApplicationSideBar(int W, int H,MazeViewDelegate delegate){
         setPrefSize(W,H);
@@ -33,11 +38,31 @@ public class MazeApplicationSideBar extends VBox {
         setEndButton.setId("setEndButton");
         endHBox.getChildren().addAll(setEndTextField,setEndButton);
 
+        DFS = new Button("DFS");
+        DFS.setId("DFS");
+        AStar = new Button("A*");
+        AStar.setId("A*");
 
-        getChildren().addAll(startHBox,endHBox);
+        BFS = new Button("BFS");
+        BFS.setId("BFS");
+
+        refresh = new Button("Refresh");
+        refresh.setId("refresh");
+
+
+
+
+
+
+
+        getChildren().addAll(startHBox,endHBox,DFS,AStar,BFS,refresh);
 
         setStartButton.addEventHandler(MouseEvent.MOUSE_CLICKED,e->{ delegate.handleEvent(e);});
         setEndButton.addEventHandler(MouseEvent.MOUSE_CLICKED,e-> delegate.handleEvent(e));
+        DFS.addEventHandler(MouseEvent.MOUSE_CLICKED,e->delegate.handleEvent(e));
+        AStar.addEventHandler(MouseEvent.MOUSE_CLICKED,e->delegate.handleEvent(e));
+        BFS.addEventHandler(MouseEvent.MOUSE_CLICKED,e-> delegate.handleEvent(e));
+        refresh.addEventHandler(MouseEvent.MOUSE_CLICKED, e-> delegate.handleEvent(e));
 
 
     }

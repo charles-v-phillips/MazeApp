@@ -1,25 +1,28 @@
 package MazeAlgorithms;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 
 public class DFS {
-    Stack<Integer[]> path = new Stack<>();
+    Queue<Integer[]> path = new LinkedList<>();
     int [][] grid;
     boolean [][] visited;
-    int[] movesRow = {1,0,-1,0};
-    int[] movesCol = {0,-1,0,1};
+    int[] movesRow = {1, 0, -1, 0,1,1,-1,-1};
+    int[] movesCol = {0, -1, 0, 1,1,-1,-1,1};
     int rowEnd;
     int colEnd;
     public DFS(int[][] grid){
         this.grid = grid;
         this.visited = new boolean[grid.length][grid[0].length];
     }
-    public DFS(int numRow, int numCol){
+    /*public DFS(int numRow, int numCol){
         grid = new int[numRow][numCol];
         visited = new boolean [numRow][numCol];
 
 
-    }
+    }*/
 
     private boolean canMove(int row, int col){
         return (row >=0
@@ -40,11 +43,10 @@ public class DFS {
             int nextRow = row + movesRow[k];
             int nextCol = col + movesCol[k];
             if(canMove(nextRow,nextCol)){
-                path.push(new Integer[]{nextRow,nextCol});
+                path.add(new Integer[]{nextRow,nextCol});
                 if(dfs(nextRow,nextCol)){
-                    System.out.println(nextRow + "  " + nextCol);
                     return true;}
-                path.pop();
+                path.remove(path.size()-1);
             }
 
 
@@ -56,20 +58,15 @@ public class DFS {
 
 
 
-    public boolean dfs(int rowStart, int colStart, int rowEnd, int colEnd){
+    public Queue<Integer[]> dfs(int rowStart, int colStart, int rowEnd, int colEnd){
         this.rowEnd = rowEnd;
         this.colEnd = colEnd;
-        return dfs(rowStart,colStart);
+        dfs(rowStart,colStart);
+        return path;
 
     }
 
     public static void main(String[] args) {
-        DFS d = new DFS(4,4);
-        d.grid[1][0] = 1;
-        d.grid[1][1] = 1;
-        d.grid[1][2] = 1;
-        d.dfs(0,0,1,3);
-        System.out.println("HI");
 
     }
 }

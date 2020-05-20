@@ -7,8 +7,8 @@ import maze.Tile;
 
 public class MazeView extends FlowPane {
     static final int TILE_SIZE = 20;
-    static final int H = 400;
-    static final int W = 400;
+    static final int H = 600;
+    static final int W = 1000;
     static final int SIDEBAR_HEIGHT = H;
     static final int SIDEBAR_WIDTH = 200;
     static final int NUM_COLUMNS = W/TILE_SIZE;
