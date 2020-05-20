@@ -3,7 +3,7 @@ package MazeAlgorithms;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class BFS {
+public class BFS implements PathFindingAlgorithm {
     int[][] modelGrid;
     boolean[][]visited;
     int[] movesRow = {1,0,-1,0};
@@ -90,4 +90,8 @@ public class BFS {
         bfs.bfs(0,0,2,2);
     }
 
+    @Override
+    public Queue<Integer[]> path(int rowStart, int colStart, int rowEnd, int colEnd) {
+        return bfs(rowStart,colStart,rowEnd,colEnd);
+    }
 }

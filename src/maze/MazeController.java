@@ -1,22 +1,19 @@
 package maze;
-
 import MazeAlgorithms.AStar;
 import MazeAlgorithms.BFS;
 import MazeAlgorithms.DFS;
+import MazeAlgorithms.PathFindingAlgorithm;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Stack;
+
 
 public class MazeController implements MazeViewDelegate {
     public MazeView view;
@@ -46,10 +43,10 @@ public class MazeController implements MazeViewDelegate {
             Button b = (Button) o;
             if(b.getId().equals("setStartButton"))setStartButtonAction();
             else if(b.getId().equals("setEndButton"))setEndButtonAction();
-            else if(b.getId().equals("DFS")) DFSButtonAction();
-            else if(b.getId().equals("A*")) AStarButtonAction();
             else if(b.getId().equals("refresh")) refreshButtonAction();
-            else if(b.getId().equals("BFS")) BFSButtonAction();
+            else if(b.getId().equals("DFS")) graphButton(new DFS(model.grid()));
+            else if(b.getId().equals("A*")) graphButton(new AStar(model.grid()));
+            else if(b.getId().equals("BFS")) graphButton(new BFS(model.grid()));
                 }
 
         if(o instanceof Tile) {
@@ -61,11 +58,38 @@ public class MazeController implements MazeViewDelegate {
             int row = t.row();
             int col = t.col();
             model.grid()[row][col] = 1;
-            //model.print();
         }
-
         refreshMazePane();
 
+    }
+    private void graphButton(PathFindingAlgorithm alg){
+        System.out.println("using graph button");
+        if(model.colStart != -1 && model.rowStart != -1 && model.colEnd != -1 && model.rowEnd != -1) {
+            Queue<Integer[]> path = alg.path(model.rowStart, model.colStart, model.rowEnd, model.colEnd);
+            List<Node> children = view.mazePane.getChildren();
+
+            Task<Void> task = new Task<Void>() {
+                // Implement required call() method
+                @Override
+                //TODO: https://medium.com/@mglover/concurrency-in-javafx-32a5f6133d
+                protected Void call() throws Exception {
+                    while (path.size() > 1) {
+                        try { Thread.sleep(30); } catch (Exception e) {}
+
+                        Integer[] step = path.poll();
+                        model.grid()[step[0]][step[1]] = 2;
+                        for (int i = 0; i < children.size(); i++) {
+                            Tile t = (Tile) children.get(i);
+                            if (t.row() == step[0] && t.col() == step[1]) Platform.runLater(() -> {
+                                t.changeColor(Color.YELLOW);
+                            });
+                        }
+                    }
+                    return null;
+                }
+            };
+            new Thread(task).start();
+        }
     }
     private void refreshButtonAction(){
         for(int row = 0; row < model.grid().length; row++){
@@ -98,125 +122,8 @@ public class MazeController implements MazeViewDelegate {
 
     }
 
-    private void DFSButtonAction(){
-        System.out.println("DFS BUTTON HIT");
-        if(model.colStart != -1 && model.rowStart != -1 && model.colEnd != -1 && model.rowEnd != -1){
-            DFS dfs = new DFS(model.grid());
-            Queue<Integer[]> path = dfs.dfs(model.rowStart,model.colStart,model.rowEnd,model.colEnd);
-            List<Node> children = view.mazePane.getChildren();
 
 
-
-                Task<Void> task = new Task<Void>() {
-                    // Implement required call() method
-                    @Override
-                    //TODO: https://medium.com/@mglover/concurrency-in-javafx-32a5f6133d
-                    protected Void call() throws Exception {
-                        // Add delay code from initial attempt
-                        while(path.size() > 1){
-                        try {
-                            Thread.sleep(20);
-                        } catch (Exception e) {
-                        }
-                            Integer[] step = path.poll();
-                            model.grid()[step[0]][step[1]] = 2;
-                            for(int i = 0; i < children.size();i++){
-                                Tile t = (Tile)children.get(i);
-                                if(t.row() == step[0] && t.col() == step[1])Platform.runLater(()-> { t.changeColor(Color.YELLOW);});
-                            }
-
-                        };
-
-                        // We're not interested in the return value, so return null
-                        return null;
-                    }
-                };
-
-// Run task in new thread
-                new Thread(task).start();
-
-            }
-        }
-
-        private void AStarButtonAction(){
-            System.out.println("A* pressed");
-            if(model.colStart != -1 && model.rowStart != -1 && model.colEnd != -1 && model.rowEnd != -1){
-                AStar a = new AStar(model.grid());
-                Queue<Integer[]> path = a.astar(model.rowStart,model.colStart,model.rowEnd,model.colEnd);
-                List<Node> children = view.mazePane.getChildren();
-
-                Task<Void> task = new Task<Void>() {
-                    // Implement required call() method
-                    @Override
-                    //TODO: https://medium.com/@mglover/concurrency-in-javafx-32a5f6133d
-                    protected Void call() throws Exception {
-                        // Add delay code from initial attempt
-                        while(path.size() > 1){
-                            try {
-                                Thread.sleep(20);
-                            } catch (Exception e) {
-                            }
-                            Integer[] step = path.poll();
-                            model.grid()[step[0]][step[1]] = 2;
-                            for(int i = 0; i < children.size();i++){
-                                Tile t = (Tile)children.get(i);
-                                if(t.row() == step[0] && t.col() == step[1])Platform.runLater(()-> { t.changeColor(Color.YELLOW);});
-                            }
-
-                        };
-
-                        // We're not interested in the return value, so return null
-                        return null;
-                    }
-                };
-
-// Run task in new thread
-                new Thread(task).start();
-
-            }
-
-            }
-
-
-
-    private void BFSButtonAction(){
-        if(model.colStart != -1 && model.rowStart != -1 && model.colEnd != -1 && model.rowEnd != -1){
-           BFS bfs = new BFS(model.grid());
-           Queue<Integer[]>path = bfs.bfs(model.rowStart,model.colStart,model.rowEnd,model.colEnd);
-            List<Node> children = view.mazePane.getChildren();
-            Task<Void> task = new Task<Void>() {
-                // Implement required call() method
-                @Override
-                //TODO: https://medium.com/@mglover/concurrency-in-javafx-32a5f6133d
-                protected Void call() throws Exception {
-                    // Add delay code from initial attempt
-                    while(path.size() > 1){
-                        try {
-                            Thread.sleep(20);
-                        } catch (Exception e) {
-                        }
-                        Integer[] step = path.poll();
-                        model.grid()[step[0]][step[1]] = 2;
-                        for(int i = 0; i < children.size();i++){
-                            Tile t = (Tile)children.get(i);
-                            if(t.row() == step[0] && t.col() == step[1])Platform.runLater(()-> { t.changeColor(Color.YELLOW);});
-                        }
-
-                    };
-
-                    // We're not interested in the return value, so return null
-                    return null;
-                }
-            };
-
-// Run task in new thread
-            new Thread(task).start();
-
-
-
-        }
-
-    }
 
 
 

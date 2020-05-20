@@ -2,7 +2,7 @@ package MazeAlgorithms;
 
 import java.util.*;
 
-public class AStar {
+public class AStar implements PathFindingAlgorithm {
     int[][] modelGrid;
     AStarNode[][] grid;
     PriorityQueue<AStarNode> openSet;
@@ -133,5 +133,10 @@ public class AStar {
         Queue<Integer[]> path = a.astar(0,0,2,2);
         System.out.println("FINISHED");
 
+    }
+
+    @Override
+    public Queue<Integer[]> path(int rowStart, int colStart, int rowEnd, int colEnd) {
+        return astar(rowStart,colStart,rowEnd,colEnd);
     }
 }
