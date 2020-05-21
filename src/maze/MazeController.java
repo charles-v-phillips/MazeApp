@@ -44,13 +44,13 @@ public class MazeController implements MazeViewDelegate {
             if(b.getId().equals("setStartButton"))setStartButtonAction();
             else if(b.getId().equals("setEndButton"))setEndButtonAction();
             else if(b.getId().equals("refresh")) refreshButtonAction();
+            else if(b.getId().equals("Random")) randomButtonAction();
             else if(b.getId().equals("DFS")) graphButton(new DFS(model.grid()));
             else if(b.getId().equals("A*")) graphButton(new AStar(model.grid()));
             else if(b.getId().equals("BFS")) graphButton(new BFS(model.grid()));
                 }
 
         if(o instanceof Tile) {
-            System.out.println( "YOU HIT A TILE");
             Tile t = (Tile) o;
             //TODO: Think if this is where im supposed to be updating the model.
             // should i have an updateModel function that gets called ANYTIME there is a user event?
@@ -124,7 +124,16 @@ public class MazeController implements MazeViewDelegate {
 
 
 
-
+    private void randomButtonAction(){
+        for(int row = 0; row < model.grid().length;row++){
+            for(int col = 0; col < model.grid()[0].length;col++){
+                if(row == model.rowStart && col == model.colStart) break;
+                if(row == model.rowEnd && col == model.colEnd) break;
+                double random = Math.random();
+                model.grid()[row][col] = (random <.3)?1:0;
+            }
+        }
+    }
 
 
     private void refreshMazePane(){

@@ -1,5 +1,6 @@
 package maze;
 
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
@@ -23,17 +24,24 @@ public class MazeView extends FlowPane {
         this.sideBar = new MazeApplicationSideBar(SIDEBAR_WIDTH,SIDEBAR_HEIGHT,delegate);
         this.mazePane = new Pane();
         mazePane.setPrefSize(W,H);
+        //https://stackoverflow.com/questions/60012383/mousedragged-detection-for-multiple-nodes-while-holding-the-button-javafx
+        mazePane.setOnDragDetected(e ->{
+            if(e.getButton() == MouseButton.PRIMARY){
+                e.consume();
+                mazePane.startFullDrag();
+            }
+        });
         for(int row = 0; row < NUM_ROWS; row++){
             for(int col = 0; col < NUM_COLUMNS; col++){
                 Tile tile = new Tile(row,col,TILE_SIZE);
-                tile.addEventHandler(MouseEvent.MOUSE_CLICKED, e->{ delegate.handleEvent(e); });
+                tile.setOnMouseDragEntered( e->{ delegate.handleEvent(e); });
+                tile.addEventHandler(MouseEvent.MOUSE_CLICKED,e-> delegate.handleEvent(e));
                 mazePane.getChildren().add(tile);
             }
         }
 
-        //mazePane.setOnMousePressed(e->{markAsWall(e,mazePane.getLayoutX(),mazePane.getLayoutY()); });
-        this.getChildren().add(sideBar);
-        this.getChildren().add(mazePane);
+        this.getChildren().addAll(sideBar,mazePane);
+
     }
 
 

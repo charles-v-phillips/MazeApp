@@ -9,8 +9,8 @@ public class DFS implements PathFindingAlgorithm {
     Queue<Integer[]> path = new LinkedList<>();
     int [][] grid;
     boolean [][] visited;
-    int[] movesRow = {1, 0, -1, 0,1,1,-1,-1};
-    int[] movesCol = {0, -1, 0, 1,1,-1,-1,1};
+    int[] movesRow = {1, 0, -1, 0};
+    int[] movesCol = {0, -1, 0, 1};
     int rowEnd;
     int colEnd;
     public DFS(int[][] grid){

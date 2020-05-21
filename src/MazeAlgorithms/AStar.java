@@ -11,8 +11,8 @@ public class AStar implements PathFindingAlgorithm {
     Queue<Integer[]> path;
     int rowEnd;
     int colEnd;
-    int[] neighborsRow = {1, 0, -1, 0,1,1,-1,-1};
-    int[] neighborsCol = {0, -1, 0, 1,1,-1,-1,1};
+    int[] neighborsRow = {1, 0, -1, 0};
+    int[] neighborsCol = {0, -1, 0, 1};
 
 
 

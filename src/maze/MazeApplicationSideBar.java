@@ -19,6 +19,7 @@ public class MazeApplicationSideBar extends VBox {
     public Button AStar;
     public Button BFS;
     public Button refresh;
+    public Button random;
     public MazeViewDelegate delegate;
     MazeApplicationSideBar(int W, int H,MazeViewDelegate delegate){
         setPrefSize(W,H);
@@ -49,13 +50,16 @@ public class MazeApplicationSideBar extends VBox {
         refresh = new Button("Refresh");
         refresh.setId("refresh");
 
+        random = new Button("Random");
+        random.setId("Random");
 
 
 
 
 
 
-        getChildren().addAll(startHBox,endHBox,DFS,AStar,BFS,refresh);
+
+        getChildren().addAll(startHBox,endHBox,DFS,AStar,BFS,random,refresh);
 
         setStartButton.addEventHandler(MouseEvent.MOUSE_CLICKED,e->{ delegate.handleEvent(e);});
         setEndButton.addEventHandler(MouseEvent.MOUSE_CLICKED,e-> delegate.handleEvent(e));
@@ -63,6 +67,7 @@ public class MazeApplicationSideBar extends VBox {
         AStar.addEventHandler(MouseEvent.MOUSE_CLICKED,e->delegate.handleEvent(e));
         BFS.addEventHandler(MouseEvent.MOUSE_CLICKED,e-> delegate.handleEvent(e));
         refresh.addEventHandler(MouseEvent.MOUSE_CLICKED, e-> delegate.handleEvent(e));
+        random.addEventHandler(MouseEvent.MOUSE_CLICKED,e-> delegate.handleEvent(e));
 
 
     }
