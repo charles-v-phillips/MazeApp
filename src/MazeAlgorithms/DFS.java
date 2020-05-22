@@ -1,9 +1,6 @@
 package MazeAlgorithms;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.*;
 
 public class DFS implements PathFindingAlgorithm {
     Queue<Integer[]> path = new LinkedList<>();
@@ -71,7 +68,8 @@ public class DFS implements PathFindingAlgorithm {
     }
 
     @Override
-    public Queue<Integer[]> path(int rowStart, int colStart, int rowEnd, int colEnd) {
-        return dfs(rowStart,colStart,rowEnd,colEnd);
+    public List<Queue<Integer[]>> path(int rowStart, int colStart, int rowEnd, int colEnd) {
+        //return dfs(rowStart,colStart,rowEnd,colEnd);
+        return null;
     }
 }

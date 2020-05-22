@@ -136,7 +136,8 @@ public class AStar implements PathFindingAlgorithm {
     }
 
     @Override
-    public Queue<Integer[]> path(int rowStart, int colStart, int rowEnd, int colEnd) {
-        return astar(rowStart,colStart,rowEnd,colEnd);
+    public List<Queue<Integer[]>> path(int rowStart, int colStart, int rowEnd, int colEnd) {
+        //return astar(rowStart,colStart,rowEnd,colEnd);
+        return null;
     }
 }

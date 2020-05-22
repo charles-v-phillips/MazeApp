@@ -13,15 +13,15 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.CountDownLatch;
 
 
 public class MazeController implements MazeViewDelegate {
     public MazeView view;
     public MazeModel model;
 
-    public MazeController(){
+    public MazeController(){}
 
-    }
     public void buildView(Stage stage){
         stage.setTitle("Maze");
         MazeView root = new MazeView();
@@ -29,7 +29,6 @@ public class MazeController implements MazeViewDelegate {
         root.delegate = this;
         this.model = new MazeModel(root.NUM_ROWS,root.NUM_COLUMNS);
         root.build();
-
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
@@ -37,7 +36,7 @@ public class MazeController implements MazeViewDelegate {
     }
 
     //TODO: seperate all these actions into their own methods
-    public void handleEvent(Event e){
+    public void handleEvent(Event e) {
         Object o = e.getSource();
         if(o instanceof Button) {
             Button b = (Button) o;
@@ -52,43 +51,27 @@ public class MazeController implements MazeViewDelegate {
 
         if(o instanceof Tile) {
             Tile t = (Tile) o;
-            //TODO: Think if this is where im supposed to be updating the model.
-            // should i have an updateModel function that gets called ANYTIME there is a user event?
-            // for now, here will do
             int row = t.row();
             int col = t.col();
-            model.grid()[row][col] = 1;
+            model.grid()[row][col] = (model.grid()[row][col] == 1)?0:1;
         }
         refreshMazePane();
 
     }
-    private void graphButton(PathFindingAlgorithm alg){
+    private void graphButton(PathFindingAlgorithm alg) {
         System.out.println("using graph button");
         if(model.colStart != -1 && model.rowStart != -1 && model.colEnd != -1 && model.rowEnd != -1) {
-            Queue<Integer[]> path = alg.path(model.rowStart, model.colStart, model.rowEnd, model.colEnd);
+            List<Queue<Integer[]>> paths = alg.path(model.rowStart, model.colStart, model.rowEnd, model.colEnd);
             List<Node> children = view.mazePane.getChildren();
+            final CountDownLatch latch = new CountDownLatch(1);
+            Task<Void> task1 = animatePathTask(paths.get(1),children,Color.RED); // animate traversal
+            Task<Void> task2 = animatePathTask(paths.get(0),children,Color.YELLOW); //animate path
+            Thread t1 = new Thread(task1);
+            Thread t2 = new Thread(task2);
 
-            Task<Void> task = new Task<Void>() {
-                // Implement required call() method
-                @Override
-                //TODO: https://medium.com/@mglover/concurrency-in-javafx-32a5f6133d
-                protected Void call() throws Exception {
-                    while (path.size() > 1) {
-                        try { Thread.sleep(30); } catch (Exception e) {}
+            t1.start();
+            t2.start();
 
-                        Integer[] step = path.poll();
-                        model.grid()[step[0]][step[1]] = 2;
-                        for (int i = 0; i < children.size(); i++) {
-                            Tile t = (Tile) children.get(i);
-                            if (t.row() == step[0] && t.col() == step[1]) Platform.runLater(() -> {
-                                t.changeColor(Color.YELLOW);
-                            });
-                        }
-                    }
-                    return null;
-                }
-            };
-            new Thread(task).start();
         }
     }
     private void refreshButtonAction(){
@@ -127,10 +110,12 @@ public class MazeController implements MazeViewDelegate {
     private void randomButtonAction(){
         for(int row = 0; row < model.grid().length;row++){
             for(int col = 0; col < model.grid()[0].length;col++){
-                if(row == model.rowStart && col == model.colStart) break;
-                if(row == model.rowEnd && col == model.colEnd) break;
-                double random = Math.random();
-                model.grid()[row][col] = (random <.3)?1:0;
+                if(row == model.rowStart && col == model.colStart) {}
+                else if(row == model.rowEnd && col == model.colEnd) {}
+                else {
+                    double random = Math.random();
+                    model.grid()[row][col] = (random < .3) ? 1 : 0;
+                }
             }
         }
     }
@@ -151,7 +136,26 @@ public class MazeController implements MazeViewDelegate {
 
     }
 
+    public Task<Void> animatePathTask(Queue<Integer[]>path,List<Node> children,Color color){
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                while (path.size() > 1) {
+                    try { Thread.sleep(30); } catch (Exception e) {}
 
-
+                    Integer[] step = path.poll();
+                    model.grid()[step[0]][step[1]] = 2;
+                    for (int i = 0; i < children.size(); i++) {
+                        Tile t = (Tile) children.get(i);
+                        if (t.row() == step[0] && t.col() == step[1]) Platform.runLater(() -> {
+                            t.changeColor(color);
+                        });
+                    }
+                }
+                return null;
+            }
+        };
+        return task;
+    }
 
 }
